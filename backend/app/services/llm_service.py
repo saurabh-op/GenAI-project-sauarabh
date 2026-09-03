@@ -9,7 +9,7 @@ client=genai.Client(
     api_key=os.getenv("GEMINI_API_KEY")
 )
 
-def generate_review(query:str,retrieved_chunks:list):
+def generate_review(retrieved_chunks:list):
     evidence=""
 
     for i,chunk in enumerate(retrieved_chunks,start=1):
@@ -18,29 +18,79 @@ def generate_review(query:str,retrieved_chunks:list):
             f"{chunk['content']}\n"
         )
 
-    prompt = f"""
-You are an AI research paper reviewer.
+        prompt = f"""
+You are an expert academic research paper reviewer.
 
-Answer the user's review question using ONLY the evidence
-provided from the research paper.
+Review the research paper using ONLY the retrieved evidence.
 
-If the evidence is insufficient, explicitly say:
-"Insufficient evidence in the retrieved paper sections."
+Do not invent facts.
+If evidence is insufficient, say:
+"Insufficient evidence in the retrieved sections."
 
-Do not invent facts or citations.
+Return ONLY valid JSON.
 
-User question:
-{query}
+Use exactly this structure:
+
+{{
+  "research_problem": {{
+    "assessment": "",
+    "strengths": [],
+    "weaknesses": [],
+    "evidence": []
+  }},
+  "literature_gap": {{
+    "assessment": "",
+    "strengths": [],
+    "weaknesses": [],
+    "evidence": []
+  }},
+  "methodology": {{
+    "assessment": "",
+    "strengths": [],
+    "weaknesses": [],
+    "evidence": []
+  }},
+  "experimental_design": {{
+    "assessment": "",
+    "strengths": [],
+    "weaknesses": [],
+    "evidence": []
+  }},
+  "results_discussion": {{
+    "assessment": "",
+    "strengths": [],
+    "weaknesses": [],
+    "evidence": []
+  }},
+  "novelty_contribution": {{
+    "assessment": "",
+    "strengths": [],
+    "weaknesses": [],
+    "evidence": []
+  }},
+  "limitations": {{
+    "assessment": "",
+    "strengths": [],
+    "weaknesses": [],
+    "evidence": []
+  }},
+  "overall_assessment": {{
+    "assessment": "",
+    "strengths": [],
+    "weaknesses": [],
+    "evidence": []
+  }}
+}}
+
+Each evidence item must contain:
+
+{{
+  "page": 1,
+  "text": "short supporting excerpt"
+}}
 
 Retrieved evidence:
 {evidence}
-
-Provide:
-1. Assessment
-2. Evidence-based reasoning
-3. Strengths
-4. Weaknesses
-5. Page references
 """
     response=client.models.generate_content(
         model="gemini-3.6-flash",
