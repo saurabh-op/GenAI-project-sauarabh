@@ -11,6 +11,8 @@ from app.rag.ingestion import extract_and_chunk_pdf
 from app.services.embedding_service import generate_embeddings
 from app.rag.vector_store import store_chunks
 
+from app.agents.review_graph import review_graph
+
 router=APIRouter()
 
 class ReviewRequest(BaseModel):
@@ -85,3 +87,4 @@ async def upload_paper(file:UploadFile=File(...)):
         "chunks_created":len(chunks),
         "message":"Paper Uploaded successfully"
     }
+
