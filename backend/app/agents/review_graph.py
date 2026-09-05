@@ -3,7 +3,7 @@ from langgraph.graph import StateGraph,START,END
 from app.agents.state import ReviewState
 
 from langchain_google_genai import ChatGoogleGenerativeAI
-
+from app.agents.schemas import AgentReview
 from app.rag.langchain_retriever import ResearchPaperRetriever
 
 def supervisor(state:ReviewState):
@@ -30,16 +30,10 @@ def methodology_agent(state:ReviewState):
     llm=ChatGoogleGenerativeAI(
         model="gemini-3.6-flash",
         temperature=0
-    )
+    ).with_structured_output(AgentReview)
 
 
     prompt = f"""
-You are a research methodology reviewer.
-
-Review ONLY the methodology evidence provided below.
-
-Do not invent information.
-
 Evaluate:
 1. Methodology clarity
 2. Technical soundness
@@ -47,35 +41,18 @@ Evaluate:
 4. Important methodological strengths
 5. Important methodological weaknesses
 
+Do not invent information.
+
 For every paper-specific claim, mention the page number.
 
-If evidence is insufficient, explicitly say:
+If evidence is insufficient, say:
 "Insufficient evidence in the retrieved sections."
-
-Return ONLY valid JSON:
-
-{{
-    "assessment": "",
-    "strengths": [],
-    "weaknesses": [],
-    "evidence": [
-        {{
-            "page": 1,
-            "text": ""
-        }}
-    ]
-}}
-
-RESEARCH PAPER EVIDENCE:
-
-{context}
 """
 
-    response=llm.invoke(prompt)
+    response = llm.invoke(prompt)
 
-    
     return {
-    "methodology_review":response.content   
+    "methodology_review": response.model_dump()
     }
 
 def novelty_agent(state:ReviewState):

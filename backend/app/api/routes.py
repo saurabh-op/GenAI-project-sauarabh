@@ -21,98 +21,16 @@ class ReviewRequest(BaseModel):
 def review_paper(request: ReviewRequest):
     
 
-    # result =review_graph.invoke({
-    #     "paper_id":request.paper_id
-    # })
+    result =review_graph.invoke({
+        "paper_id":request.paper_id
+    })
         
 
-    # return {
-    #     "paper_id": request.paper_id,
-    #     "review": result["final_review"]
-    # }
     return {
-            "final_review": {
-                "research_problem": {
-                    "assessment": "The research problem is clearly defined.",
-                    "strengths": [
-                        "The problem is relevant.",
-                        "The motivation is clearly explained."
-                    ],
-                    "weaknesses": [
-                        "The problem scope could be more precise."
-                    ],
-                    "evidence": [
-                        {
-                            "page": 1,
-                            "text": "The paper clearly states the research objective."
-                        }
-                    ]
-                },
-    
-                "literature_gap": {
-                    "assessment": "The paper identifies a reasonable gap in existing research.",
-                    "strengths": [
-                        "Relevant prior work is discussed."
-                    ],
-                    "weaknesses": [
-                        "The gap could be supported with more recent studies."
-                    ],
-                    "evidence": []
-                },
-    
-                "methodology": {
-                    "assessment": "The proposed methodology is technically reasonable.",
-                    "strengths": [
-                        "The methodology is structured."
-                    ],
-                    "weaknesses": [
-                        "Some implementation details are insufficiently explained."
-                    ],
-                    "evidence": []
-                },
-    
-                "experimental_design": {
-                    "assessment": "The experimental setup provides a reasonable basis for evaluation.",
-                    "strengths": [],
-                    "weaknesses": [],
-                    "evidence": []
-                },
-    
-                "results_discussion": {
-                    "assessment": "The results indicate that the proposed approach performs reasonably well.",
-                    "strengths": [],
-                    "weaknesses": [],
-                    "evidence": []
-                },
-    
-                "novelty_contribution": {
-                    "assessment": "The work provides a meaningful contribution.",
-                    "strengths": [],
-                    "weaknesses": [],
-                    "evidence": []
-                },
-    
-                "limitations": {
-                    "assessment": "The paper has several limitations that should be discussed more explicitly.",
-                    "strengths": [],
-                    "weaknesses": [],
-                    "evidence": []
-                },
-    
-                "overall_assessment": {
-                    "assessment": "Overall, the paper presents a promising research contribution.",
-                    "strengths": [
-                        "Clear research motivation.",
-                        "Reasonable methodology."
-                    ],
-                    "weaknesses": [
-                        "More extensive evaluation would strengthen the work."
-                    ],
-                    "evidence": []
-                }
-            }
-        }
-
+        "paper_id": request.paper_id,
+        "review": result["final_review"]
+    }
+   
 
 
 @router.post("/upload")
@@ -147,4 +65,6 @@ async def upload_paper(file:UploadFile=File(...)):
         "chunks_created":len(chunks),
         "message":"Paper Uploaded successfully"
     }
+
+  
 

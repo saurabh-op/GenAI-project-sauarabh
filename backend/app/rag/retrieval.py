@@ -29,15 +29,27 @@ def retrieve_chunks(query:str,paper_id:str,top_k:int=5):
             )
         )
 
-        results=cursor.fetchall()
+        rows=cursor.fetchall()
 
     connection.close()
 
-    return[
-        {
-            "content":row[0],
-            "page":row[1],
-            "distance":row[2]
-        }
-        for row in results
-    ]
+    results=[]
+    seen=set()
+
+    for content , page , distance in rows:
+
+        content_key=content.strip()
+
+        if content_key in seen:
+            continue
+
+        seen.add(content_key)
+        distance=float(distance)
+        results.append({
+            "content":content,
+            "page":page,
+            "distance":float(distance),
+            "similarity":1-distance
+        })
+
+    return results
