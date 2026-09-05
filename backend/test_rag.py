@@ -6,7 +6,7 @@ query = "What methodology does this paper use, and what are its weaknesses?"
 chunks = retrieve_chunks(
     query=query,
     paper_id="sample-paper",
-    top_k=5
+    top_k=1
 )
 
 answer = generate_review(

@@ -4,8 +4,6 @@ import os
 import uuid
 
 from fastapi import UploadFile, File
-from app.rag.retrieval import retrieve_chunks
-from app.services.llm_service import generate_review
 
 from app.rag.ingestion import extract_and_chunk_pdf
 from app.services.embedding_service import generate_embeddings
@@ -21,37 +19,99 @@ class ReviewRequest(BaseModel):
 
 @router.post("/review")
 def review_paper(request: ReviewRequest):
+    
 
-    queries = [
-        "research problem and clarity",
-        "literature review and research gap",
-        "methodology and proposed approach",
-        "experimental design and evaluation",
-        "results and discussion",
-        "novelty and contribution",
-        "limitations",
-        "strengths and weaknesses"
-    ]
+    # result =review_graph.invoke({
+    #     "paper_id":request.paper_id
+    # })
+        
 
-    all_chunks = []
-
-    for query in queries:
-        chunks = retrieve_chunks(
-            query=query,
-            paper_id=request.paper_id,
-            top_k=3
-        )
-
-        all_chunks.extend(chunks)
-
-    review = generate_review(
-        retrieved_chunks=all_chunks
-    )
-
+    # return {
+    #     "paper_id": request.paper_id,
+    #     "review": result["final_review"]
+    # }
     return {
-        "paper_id": request.paper_id,
-        "review": review
-    }
+            "final_review": {
+                "research_problem": {
+                    "assessment": "The research problem is clearly defined.",
+                    "strengths": [
+                        "The problem is relevant.",
+                        "The motivation is clearly explained."
+                    ],
+                    "weaknesses": [
+                        "The problem scope could be more precise."
+                    ],
+                    "evidence": [
+                        {
+                            "page": 1,
+                            "text": "The paper clearly states the research objective."
+                        }
+                    ]
+                },
+    
+                "literature_gap": {
+                    "assessment": "The paper identifies a reasonable gap in existing research.",
+                    "strengths": [
+                        "Relevant prior work is discussed."
+                    ],
+                    "weaknesses": [
+                        "The gap could be supported with more recent studies."
+                    ],
+                    "evidence": []
+                },
+    
+                "methodology": {
+                    "assessment": "The proposed methodology is technically reasonable.",
+                    "strengths": [
+                        "The methodology is structured."
+                    ],
+                    "weaknesses": [
+                        "Some implementation details are insufficiently explained."
+                    ],
+                    "evidence": []
+                },
+    
+                "experimental_design": {
+                    "assessment": "The experimental setup provides a reasonable basis for evaluation.",
+                    "strengths": [],
+                    "weaknesses": [],
+                    "evidence": []
+                },
+    
+                "results_discussion": {
+                    "assessment": "The results indicate that the proposed approach performs reasonably well.",
+                    "strengths": [],
+                    "weaknesses": [],
+                    "evidence": []
+                },
+    
+                "novelty_contribution": {
+                    "assessment": "The work provides a meaningful contribution.",
+                    "strengths": [],
+                    "weaknesses": [],
+                    "evidence": []
+                },
+    
+                "limitations": {
+                    "assessment": "The paper has several limitations that should be discussed more explicitly.",
+                    "strengths": [],
+                    "weaknesses": [],
+                    "evidence": []
+                },
+    
+                "overall_assessment": {
+                    "assessment": "Overall, the paper presents a promising research contribution.",
+                    "strengths": [
+                        "Clear research motivation.",
+                        "Reasonable methodology."
+                    ],
+                    "weaknesses": [
+                        "More extensive evaluation would strengthen the work."
+                    ],
+                    "evidence": []
+                }
+            }
+        }
 
 
 

@@ -31,7 +31,7 @@ Provide an evidence-based assessment.
 def create_rag_chain(paper_id:str):
     retriever=ResearchPaperRetriever(
         paper_id=paper_id,
-        top_k=5
+        top_k=1
     )
 
     def run(question: str):

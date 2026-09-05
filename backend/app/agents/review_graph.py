@@ -15,7 +15,7 @@ def methodology_agent(state:ReviewState):
 
     retriever=ResearchPaperRetriever(
         paper_id=state["paper_id"],
-        top_k=5
+        top_k=1
     )
 
     documents=retriever.invoke(
@@ -82,7 +82,7 @@ def novelty_agent(state:ReviewState):
     print("Novlty agent:rviewing novelty")
     retriever=ResearchPaperRetriever(
         paper_id=state["paper_id"],
-        top_k=5
+        top_k=1
     )
 
     documents=retriever.invoke("what existig research does this paper discuss,what research gap does it identify, and what is novel about the proposed contirbution ?")
@@ -141,7 +141,7 @@ def quality_agent(state: ReviewState):
     print("quality agent: reviewing ressearch quality")
     retriever=ResearchPaperRetriever(
         paper_id=state["paper_id"],
-        top_k=5
+        top_k=1
     )
     documents=retriever.invoke(
         "What experiments, datasets, evaluation metrics, results, discussion, limitations, and weaknesses are presented in this research paper?"    )

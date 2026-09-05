@@ -1,7 +1,7 @@
 from app.rag.langchain_retriever import ResearchPaperRetriever
 retriever = ResearchPaperRetriever(
     paper_id="04980ce8-e196-4050-b36f-abe619710578",
-    top_k=5
+    top_k=1
 )
 
 documents = retriever.invoke(
