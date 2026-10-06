@@ -1,7 +1,7 @@
 from langgraph.graph import StateGraph,START,END
 
 from app.agents.state import ReviewState
-
+from app.agents.schemas import AgentReview,FinalReview
 from langchain_google_genai import ChatGoogleGenerativeAI
 from app.agents.schemas import AgentReview
 from app.rag.langchain_retriever import ResearchPaperRetriever
@@ -70,14 +70,10 @@ def novelty_agent(state:ReviewState):
     llm=ChatGoogleGenerativeAI(
         model="gemini-3.6-flash",
         temperature=0
-    )
+    ).with_structured_output(AgentReview)
 
 
     prompt = f"""
-You are a research novelty reviewer.
-
-Review ONLY the evidence provided below.
-
 Evaluate:
 1. Literature/research gap
 2. Novelty of the proposed approach
@@ -91,25 +87,10 @@ For every paper-specific claim, mention the page number.
 
 If evidence is insufficient, say:
 "Insufficient evidence in the retrieved sections."
-
-Return ONLY valid JSON:
-{{
-"assessment":",
-"strenghts":[],
-"weakness":[],
-"evidence":[
-{{
-"page":1,
-"text":""
-}}]}}
-RESEARCH PAPER EVIDENCE:
-{
-    context
-}
 """
     response=llm.invoke(prompt)
     return {
-        "novelty_review":response.content
+       "novelty_review": response.model_dump()
     }
 
 
@@ -132,12 +113,8 @@ def quality_agent(state: ReviewState):
     llm=ChatGoogleGenerativeAI(
         model="gemini-3.6-flash",
         temperature=0
-    )
+    ).with_structured_output(AgentReview)
     prompt = f"""
-You are a research quality reviewer.
-
-Review ONLY the evidence provided below.
-
 Evaluate:
 1. Experimental design
 2. Dataset and evaluation methodology
@@ -152,28 +129,10 @@ For every paper-specific claim, mention the page number.
 
 If evidence is insufficient, say:
 "Insufficient evidence in the retrieved sections."
-
-Return ONLY valid JSON:
-
-{{
-    "assessment": "",
-    "strengths": [],
-    "weaknesses": [],
-    "evidence": [
-        {{
-            "page": 1,
-            "text": ""
-        }}
-    ]
-}}
-
-RESEARCH PAPER EVIDENCE:
-
-{context}
 """
     response=llm.invoke(prompt)
     return {
-        "quality_review":response.content
+        "quality_review":response.model_dump()
     }
 
 
@@ -188,7 +147,7 @@ def final_reviewer(state: ReviewState):
     llm = ChatGoogleGenerativeAI(
         model="gemini-3.6-flash",
         temperature=0
-    )
+    ).with_structured_output(FinalReview)
 
     prompt = f"""
 You are the final research paper reviewer.
@@ -276,7 +235,7 @@ If the specialist reviews do not provide enough information for a section, write
     response = llm.invoke(prompt)
 
     return {
-        "final_review": response.content
+            "final_review": response.model_dump()
     }
 
 workflow=StateGraph(ReviewState)

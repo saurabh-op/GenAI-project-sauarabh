@@ -14,9 +14,8 @@ from app.agents.review_graph import review_graph
 router=APIRouter()
 
 class ReviewRequest(BaseModel):
-    paper_id:str
-    query:str
-
+    paper_id: str
+    
 @router.post("/review")
 def review_paper(request: ReviewRequest):
     

@@ -1,11 +1,6 @@
-from app.rag.ingestion import extract_and_chunk_pdf
-
-chunks = extract_and_chunk_pdf(
-    "app/rag/documents/sample.pdf"
-)
-
-print("Number of chunks:", len(chunks))
-
-for chunk in chunks[:3]:
-    print("\nPage:", chunk["page"])
-    print(chunk["text"][:300])
+import heapq
+h=[]
+heapq.heappush(h,9)
+heapq.heappush(h,90)
+heapq.heappush(h,1)
+print (h[0])

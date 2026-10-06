@@ -12,3 +12,13 @@ class AgentReview(BaseModel):
     strengths: List[str]
     weaknesses: List[str]
     evidence: List[Evidence]
+
+class FinalReview(BaseModel):
+    research_problem: AgentReview
+    literature_gap: AgentReview
+    methodology: AgentReview
+    experimental_design: AgentReview
+    results_discussion: AgentReview
+    novelty_contribution: AgentReview
+    limitations: AgentReview
+    overall_assessment: AgentReview
