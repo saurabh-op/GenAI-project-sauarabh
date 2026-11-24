@@ -1,4 +1,6 @@
 import os 
+from functools import lru_cache
+
 import psycopg
 from dotenv import load_dotenv
 
@@ -6,8 +8,14 @@ from app.services.embedding_service import generate_embeddings
 
 load_dotenv()
 
+
+@lru_cache(maxsize=32)
+def _cached_query_embedding(query: str):
+    return tuple(generate_embeddings([query])[0])
+
+
 def retrieve_chunks(query:str,paper_id:str,top_k:int=5):
-    query_embedding=generate_embeddings([query])[0]
+    query_embedding=list(_cached_query_embedding(query))
     connection=psycopg.connect(os.getenv("DATABASE_URL"))
     with connection.cursor() as cursor:
         cursor.execute(

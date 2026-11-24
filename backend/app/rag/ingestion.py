@@ -10,7 +10,7 @@ def extract_and_chunk_pdf(file_path: str):
     documents = []
 
     for page_number, page in enumerate(reader.pages, start=1):
-        text = page.extract_text() or ""
+        text = (page.extract_text() or "").replace("\x00", " ")
 
         if text.strip():
             documents.append({

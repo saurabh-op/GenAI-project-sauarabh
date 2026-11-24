@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from app.rag import retrieval
 from app.rag.retrieval import retrieve_chunks
 
 
@@ -51,3 +52,23 @@ def test_retrieve_chunks():
         assert len(results) == 2
         assert results[0]["page"] == 4
         assert results[0]["similarity"] == 0.8
+
+
+def test_query_embedding_is_cached():
+    retrieval._cached_query_embedding.cache_clear()
+    try:
+        with patch(
+            "app.rag.retrieval.generate_embeddings",
+            return_value=[[0.1] * 768]
+        ) as mock_embeddings, patch(
+            "app.rag.retrieval.psycopg.connect"
+        ) as mock_connect:
+            mock_cursor = mock_connect.return_value.cursor.return_value.__enter__.return_value
+            mock_cursor.fetchall.return_value = []
+
+            retrieve_chunks("same query", "paper-one")
+            retrieve_chunks("same query", "paper-two")
+
+            assert mock_embeddings.call_count == 1
+    finally:
+        retrieval._cached_query_embedding.cache_clear()

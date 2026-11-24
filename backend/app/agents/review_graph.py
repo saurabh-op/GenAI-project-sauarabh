@@ -15,7 +15,7 @@ def methodology_agent(state:ReviewState):
 
     retriever=ResearchPaperRetriever(
         paper_id=state["paper_id"],
-        top_k=1
+        top_k=3
     )
 
     documents=retriever.invoke(
@@ -47,6 +47,9 @@ For every paper-specific claim, mention the page number.
 
 If evidence is insufficient, say:
 "Insufficient evidence in the retrieved sections."
+
+Retrieved paper excerpts:
+{context}
 """
 
     response = llm.invoke(prompt)
@@ -59,7 +62,7 @@ def novelty_agent(state:ReviewState):
     print("Novlty agent:rviewing novelty")
     retriever=ResearchPaperRetriever(
         paper_id=state["paper_id"],
-        top_k=1
+        top_k=3
     )
 
     documents=retriever.invoke("what existig research does this paper discuss,what research gap does it identify, and what is novel about the proposed contirbution ?")
@@ -87,6 +90,9 @@ For every paper-specific claim, mention the page number.
 
 If evidence is insufficient, say:
 "Insufficient evidence in the retrieved sections."
+
+Retrieved paper excerpts:
+{context}
 """
     response=llm.invoke(prompt)
     return {
@@ -99,7 +105,7 @@ def quality_agent(state: ReviewState):
     print("quality agent: reviewing ressearch quality")
     retriever=ResearchPaperRetriever(
         paper_id=state["paper_id"],
-        top_k=1
+        top_k=3
     )
     documents=retriever.invoke(
         "What experiments, datasets, evaluation metrics, results, discussion, limitations, and weaknesses are presented in this research paper?"    )
@@ -129,6 +135,9 @@ For every paper-specific claim, mention the page number.
 
 If evidence is insufficient, say:
 "Insufficient evidence in the retrieved sections."
+
+Retrieved paper excerpts:
+{context}
 """
     response=llm.invoke(prompt)
     return {
@@ -167,65 +176,7 @@ Combine these assessments into one coherent research paper review.
 
 Do not introduce facts that are not present in the specialist reviews.
 
-Return ONLY valid JSON using exactly this structure:
-
-{{
-  "research_problem": {{
-    "assessment": "",
-    "strengths": [],
-    "weaknesses": [],
-    "evidence": []
-  }},
-  "literature_gap": {{
-    "assessment": "",
-    "strengths": [],
-    "weaknesses": [],
-    "evidence": []
-  }},
-  "methodology": {{
-    "assessment": "",
-    "strengths": [],
-    "weaknesses": [],
-    "evidence": []
-  }},
-  "experimental_design": {{
-    "assessment": "",
-    "strengths": [],
-    "weaknesses": [],
-    "evidence": []
-  }},
-  "results_discussion": {{
-    "assessment": "",
-    "strengths": [],
-    "weaknesses": [],
-    "evidence": []
-  }},
-  "novelty_contribution": {{
-    "assessment": "",
-    "strengths": [],
-    "weaknesses": [],
-    "evidence": []
-  }},
-  "limitations": {{
-    "assessment": "",
-    "strengths": [],
-    "weaknesses": [],
-    "evidence": []
-  }},
-  "overall_assessment": {{
-    "assessment": "",
-    "strengths": [],
-    "weaknesses": [],
-    "evidence": []
-  }}
-}}
-
-Each evidence item must contain:
-
-{{
-  "page": 1,
-  "text": "short supporting statement"
-}}
+Keep the review concise and preserve page references in the evidence.
 
 If the specialist reviews do not provide enough information for a section, write:
 
